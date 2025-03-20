@@ -1,31 +1,19 @@
 import express from "express"
 
-const app = express()
-
 import mongoose from "mongoose"
 
 import movieRoutes from './routes/movieRoutes.js'
+import authRoutes from './routes/authRoutes.js'
+
+import 'dotenv/config'
+
+const app = express()
 
 app.use(express.json())
 
 app.use('/api',movieRoutes)
 
-
-// app.get('/api/movie/:id', async (req,res) => {
-//     try{
-//         const {id} = req.params
-//         const movie = await Movie.findById(id)
-//         res.status(200).json(movie)
-//     } catch {
-//         res.status(500)
-//     }
-// })
-
-
-
-
-
-
+app.use('/api/auth',authRoutes)
 
 
 mongoose.connect('mongodb+srv://aby:aby123@cluster0.mc1zm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')

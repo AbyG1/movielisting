@@ -18,7 +18,10 @@
   },
   "homepage": "https://github.com/AbyG1/movielisting#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.15.0",
     "mongoose": "^8.12.1"
   }

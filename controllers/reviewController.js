@@ -1,4 +1,4 @@
-import reviewSchema from "../models/reviewModel.js";
+import userReview from "../models/reviewModel.js";
 
 
 const addReview = async(req,res) => {
@@ -7,18 +7,17 @@ const addReview = async(req,res) => {
 
      
         const user_id = req.user.id
-        console.log(user_id)
+       
         const movie_id = req.params.id
-        console.log(movie_id)
-
+        
         const {rating, review } = req.body
         
-        const newReview = new reviewSchema({user_id, movie_id,rating, review})
+        const newReview = new userReview({user_id, movie_id,rating, review})
 
         if(!rating){
             return res.json({message:'rating is required'})
         }
-        console.log(newReview)
+ 
         await newReview.save()
 
         res.status(201).json({message:"Reviw added"})
@@ -31,20 +30,23 @@ const addReview = async(req,res) => {
 }
 
 
-const viewReviews = () => {
-
-}
-
 
 const deleteReview = () => {
 
 }
 
 
-const viewAllReviews = () => {
+const viewAllReviews = async(req,res) => {
+
+    try{
+        const reviews = await userReview.find({})
+        res.status(200).json({reviews})
+    } catch(error) {
+        res.status(500).json({message:error.message})
+    }
 
 }
 
 
 
-export { addReview,}
+export { addReview,viewAllReviews}

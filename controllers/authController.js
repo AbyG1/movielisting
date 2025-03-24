@@ -8,10 +8,10 @@ const register = async (req,res) => {
     try{
         const { username, password, role} = req.body
 
-    const hashedPassword = await bcrypt.hash(password,10)
+        const hashedPassword = await bcrypt.hash(password,10)
 
-    const newUser = new User({username, password: hashedPassword, role})
-    await newUser.save()
+        const newUser = new User({username, password: hashedPassword, role})
+        await newUser.save()
 
     res.status(201).json({message:`User registered with username ${username}`})
 

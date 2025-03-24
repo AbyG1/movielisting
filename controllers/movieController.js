@@ -15,6 +15,7 @@ const getOneMovie = async(req,res) => {
     try{
         const {id} = req.params
         
+        
         const movie = await Movies.findById(id)
         res.status(200).json(movie)
         
@@ -36,6 +37,8 @@ const addMovie = async(req,res) => {
 
 }
 
+
+
 const deleteMovie = async(req,res) => {
 
     try{
@@ -49,7 +52,7 @@ const deleteMovie = async(req,res) => {
 
    
     } catch (error){
-        res.status(500).json({message: error.message})
+        res.status(500).json({message: "error"})
     }
 
 }

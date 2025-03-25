@@ -1,5 +1,10 @@
 import userReview from "../models/reviewModel.js";
 
+import { Aggregate } from "mongoose";
+import review from "../models/reviewModel.js";
+
+import mongoose from "mongoose";
+
 
 const addReview = async(req,res) => {
 
@@ -17,7 +22,7 @@ const addReview = async(req,res) => {
         if(!rating){
             return res.json({message:'rating is required'})
         }
- 
+        
         await newReview.save()
 
         res.status(201).json({message:"Reviw added"})
@@ -30,12 +35,7 @@ const addReview = async(req,res) => {
 }
 
 
-
-const deleteReview = () => {
-
-}
-
-
+//view all reviews in the collection
 const viewAllReviews = async(req,res) => {
 
     try{
@@ -48,5 +48,90 @@ const viewAllReviews = async(req,res) => {
 }
 
 
+const getIndividualMovieReviews = async (req,res) => {
 
-export { addReview,viewAllReviews}
+        try{
+        
+          const movieId = new mongoose.Types.ObjectId(req.params.id)
+         
+          const reviews =  await review.aggregate([
+            {
+                $match : { movie_id: movieId}
+            },   
+            
+         
+            {
+                $lookup: {
+                    from: 'movies',  
+                    localField: 'movie_id',  
+                    foreignField: '_id',  
+                    as: 'movieDetails'  
+                }
+
+            }
+            
+        ])
+
+            if(reviews.length === 0){
+               return res.status(404).json({message:'No reviews found'})
+            }
+
+            res.status(200).json(reviews)
+    
+
+        } catch(err){
+            res.status(500).json({message:err.message})
+        }
+
+
+
+
+}
+
+
+const getReviewsByUser = async(req,res) => {
+
+    try{
+        const userId = new mongoose.Types.ObjectId(req.params.id)
+
+        const reviews = await review.aggregate([
+            {
+            $match: {user_id: userId},
+            },
+            {
+                $lookup : { 
+                    from:"users",
+                    localField:"user_id",
+                    foreignField:"_id",
+                    as: "userDetails"
+                
+                 }
+            }
+        
+        
+        ])
+    
+        if(review.length === 0){
+            return res.status(404).json({message:"No revies found"})
+        }
+    
+        res.status(200).json(reviews)
+        
+
+
+    } catch (err){
+
+        res.status(500).json(err.message)
+
+    }
+
+}
+
+
+
+
+
+
+
+
+export { addReview,viewAllReviews,getIndividualMovieReviews,getReviewsByUser}

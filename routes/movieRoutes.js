@@ -9,6 +9,10 @@ const router = express.Router()
 
 
 
+
+
+
+
 router.post('/movie',verifyToken, authorizeRole("admin"), addMovie)
 router.delete('/movie/:id',verifyToken, authorizeRole("admin"), deleteMovie)
 

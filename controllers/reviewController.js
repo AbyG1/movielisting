@@ -55,49 +55,60 @@ const getIndividualMovieReviews = async (req,res) => {
         try{
         
           const movieId = new mongoose.Types.ObjectId(req.params.id)
+
+          const pageNumber = parseInt(req.query.page || 0)
+          const numberOfReviews = parseInt(req.query.size || 10)
+
+
          
           const reviews =  await review.aggregate([
 
-            {
-                $facet: {
-                    reviwCount : [{$count : "total"}],
-                    data:[
-                        {
-                            $match : { movie_id: movieId}
-                        },   
-                        
-                     
-                        {
-                            $lookup: {
-                                from: 'movies',  
-                                localField: 'movie_id',  
-                                foreignField: '_id',  
-                                as: 'movieDetails'  
-                            }
-                        },
-                        {
-                            $lookup : { 
-                                from:"users",
-                                localField:"user_id",
-                                foreignField:"_id",
-                                as: "userDetails"
-                            
-                             }
-                        }, 
-                        {
-                            $unwind: "$userDetails",
-                        },
-                        {
-                            $project : {
-                                "userDetails.password": 0,
-                                "userDetails._id": 0,
-                                "userDetails.__v":0
-                            }
-                        },
-                    ]
+        
+                {
+                    $match : { movie_id: movieId}
+                },
+                {
+                    $facet: {
+                        reviewCount : [{$count : "Total Reviews of this movie"}],
+                        data:[
+                             
+                            {
+                                $lookup: {
+                                    from: 'movies',  
+                                    localField: 'movie_id',  
+                                    foreignField: '_id',  
+                                    as: 'movieDetails'  
+                                }
+                            },
+                            {
+                                $lookup : { 
+                                    from:"users",
+                                    localField:"user_id",
+                                    foreignField:"_id",
+                                    as: "userDetails"
+                                
+                                 }
+                            }, 
+                            {
+                                $unwind: "$userDetails",
+                            },
+                            {
+                                $project : {
+                                    "userDetails.password": 0,
+                                    "userDetails._id": 0,
+                                    "userDetails.__v":0
+                                }
+                            },
+                            {$skip: pageNumber * numberOfReviews },
+                            {$limit: numberOfReviews }
+                        ]
+                    }
+
                 }
 
-            }
+                
+
+            
 
                
         ])
@@ -122,6 +133,9 @@ const getIndividualMovieReviews = async (req,res) => {
 const getReviewsByUser = async(req,res) => {
 
     try{
+        const pageNumber = parseInt(req.query.page || 0)
+        const numberOfReviews = parseInt(req.query.size || 10)
+
         const userId = new mongoose.Types.ObjectId(req.params.id)
 
         const reviews = await review.aggregate([
@@ -146,7 +160,9 @@ const getReviewsByUser = async(req,res) => {
                     "userDetails._id": 0,
                     "userDetails.__v":0
                 }
-            }
+            },
+            {$skip: pageNumber * numberOfReviews },
+            {$limit: numberOfReviews }
             
         
         ])

@@ -7,8 +7,8 @@ import authRoutes from './routes/authRoutes.js'
 import movieReview from './routes/reviewRoutes.js'
 
 
-
 import 'dotenv/config'
+import { connectionString } from "./config/db.js"
 
 const app = express()
 
@@ -21,7 +21,7 @@ app.use('/api/auth',authRoutes)
 app.use('/api/movie-review',movieReview)
 
 
-mongoose.connect('mongodb+srv://aby:aby123@cluster0.mc1zm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(connectionString)
 .then(() => {
     console.log("Connected to database!")
 })

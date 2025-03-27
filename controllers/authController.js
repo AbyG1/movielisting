@@ -3,10 +3,11 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 
-const register = async (req,res) => {
+const register = async (req,res,next) => {
 
     try{
         const { username, password, role} = req.body
+
 
         const hashedPassword = await bcrypt.hash(password,10)
 
@@ -16,23 +17,27 @@ const register = async (req,res) => {
     res.status(201).json({message:`User registered with username ${username}`})
 
     } catch(err) {
-        res.status(500).json({message: 'something went wrong'})
+        res.status(400)
+        next(err)
+        // res.status(500).json({message: 'something went wrong'})
     }
     
 }
 
-const login = async (req,res) => {
+const login = async (req,res,next) => {
     try{
         const {username, password} = req.body;
         const user = await User.findOne({username})
-
+        console.log("reached here")
         if(!user){
-            return res.status(404).json({message: `user not found`})
+             res.status(404)
+             throw new Error(`user not found`)
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
         if(!isMatch){
-           return res.status(400).json({message: `Invalid credentails`}) 
+            res.status(401)
+             throw new Error(`Invalid credentails`) 
         }
 
 
@@ -40,7 +45,9 @@ const login = async (req,res) => {
 
         res.status(200).json({token})
     } catch(err){
-       res.status(500).json({message: err.message})
+        res.status(400)
+        next(err)
+    //    res.status(500).json({message: err.message})
     }
  
 

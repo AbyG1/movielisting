@@ -6,7 +6,7 @@ import review from "../models/reviewModel.js";
 import mongoose from "mongoose";
 
 
-const addReview = async(req,res) => {
+const addReview = async(req,res,next) => {
 
     try{
 
@@ -20,7 +20,9 @@ const addReview = async(req,res) => {
         const newReview = new userReview({user_id, movie_id,rating, review})
 
         if(!rating){
-            return res.json({message:'rating is required'})
+          
+            res.status(400)
+            throw new Error("Rating is required")
                 
         }
         
@@ -30,27 +32,30 @@ const addReview = async(req,res) => {
 
                 
     } catch(err) {
-
-        res.status(500).json({message:`error ${err.message}`})
+        res.status(400)
+        next(err)
+        // res.status(500).json({message:`error ${err.message}`})
     }
 
 }
 
 
 //view all reviews in the collection
-const viewAllReviews = async(req,res) => {
+const viewAllReviews = async(req,res,next) => {
 
     try{
         const reviews = await userReview.find({})
         res.status(200).json({reviews})
     } catch(error) {
-        res.status(500).json({message:error.message})
+        res.status(400)
+        next(err)
+        // res.status(500).json({message:error.message})
     }
 
 }
 
 
-const getIndividualMovieReviews = async (req,res) => {
+const getIndividualMovieReviews = async (req,res,next) => {
 
         try{
         
@@ -91,7 +96,7 @@ const getIndividualMovieReviews = async (req,res) => {
                             }, 
                             {
                                 $unwind: "$userDetails",
-                            },
+                            },   
                             {
                                 $project : {
                                     "userDetails.password": 0,
@@ -114,14 +119,17 @@ const getIndividualMovieReviews = async (req,res) => {
         ])
 
             if(reviews.length === 0){
-               return res.status(404).json({message:'No reviews found'})
+               res.status(404)
+               throw new Error('No reviews found')
             }
 
             res.status(200).json(reviews)
     
 
         } catch(err){
-            res.status(500).json({message:err.message})
+            res.status(400)
+            next(err)
+            // res.status(500).json({message:err.message})
         }
 
 
@@ -130,7 +138,7 @@ const getIndividualMovieReviews = async (req,res) => {
 }
 
 
-const getReviewsByUser = async(req,res) => {
+const getReviewsByUser = async(req,res,next) => {
 
     try{
         const pageNumber = parseInt(req.query.page || 0)
@@ -168,6 +176,8 @@ const getReviewsByUser = async(req,res) => {
         ])
     
         if(review.length === 0){
+            res.status(404)
+            throw new Error("No reviews found")
             return res.status(404).json({message:"No reviews found"})
         }
     
@@ -176,8 +186,9 @@ const getReviewsByUser = async(req,res) => {
 
 
     } catch (err){
-
-        res.status(500).json(err.message)
+        res.status(400)
+        // res.status(500).json(err.message)
+        next(err)
 
     }
 

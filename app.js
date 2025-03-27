@@ -10,6 +10,9 @@ import movieReview from './routes/reviewRoutes.js'
 import 'dotenv/config'
 import { connectionString } from "./config/db.js"
 
+
+import errorHandler from "./middlewares/errorhandlers.js"
+
 const app = express()
 
 app.use(express.json())
@@ -19,6 +22,8 @@ app.use('/api',movieRoutes)
 app.use('/api/auth',authRoutes)
 
 app.use('/api/movie-review',movieReview)
+
+app.use(errorHandler);
 
 
 mongoose.connect(connectionString)

@@ -15,6 +15,9 @@ const MovieSchema = new mongoose.Schema(
         director: {
             type: String,
             required: true
+        },
+        moviePoster: {
+            type:String
         }
     },
 

@@ -2,6 +2,11 @@ import express from 'express'
 import { getMovies,getOneMovie,addMovie,deleteMovie } from '../controllers/movieController.js'
 import verifyToken from '../middlewares/authMiddleware.js'
 import authorizeRole from '../middlewares/roleMiddleware.js'
+import multer from 'multer'
+
+const upload = multer({dest: "../upload"})
+
+
 
 const router = express.Router()
 
@@ -13,7 +18,7 @@ const router = express.Router()
 
 
 
-router.post('/movie',verifyToken, authorizeRole("admin"), addMovie)
+router.post('/movie',verifyToken,upload.single("moviePoster"), authorizeRole("admin"), addMovie)
 router.delete('/movie/:id',verifyToken, authorizeRole("admin"), deleteMovie)
 
 

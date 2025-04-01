@@ -28,7 +28,6 @@ const login = async (req,res,next) => {
     try{
         const {username, password} = req.body;
         const user = await User.findOne({username})
-        console.log("reached here")
         if(!user){
              res.status(404)
              throw new Error(`user not found`)

@@ -35,11 +35,13 @@ const addMovie = async(req,res,next) => {
     try{  
           console.log(req.file)
           const movies = await Movies.create(req.body)
+          movies.moviePoster = req.file.path
+          movies.save()
            res.status(200).json(movies)
         } catch(error){
             res.staus(400)
             next(error)
-            // res.status(500).json({message: error.message})
+            
         }
 
 }

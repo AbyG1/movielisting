@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken'
+import 'dotenv/config'
+
 
 const verifyToken = (req,res,next) => {
 
@@ -25,8 +27,9 @@ const verifyToken = (req,res,next) => {
             // res.status(400).json({message: "Token is not valid"})
             if(err.name === "TokenExpiredError"){
               
-                res.status(401)
-                next(err)
+                res.status(403)
+                throw new Error("Access token expired, Please refresh your token")
+                
 
             }
         

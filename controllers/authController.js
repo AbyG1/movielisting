@@ -41,9 +41,12 @@ const login = async (req,res,next) => {
         }
 
    
-        const accesstoken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"1m"})
+        const accessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"20m"})
      
-        res.status(200).json({accesstoken})
+
+        const refreshToken = jwt.sign({id: user._id,role: user.role}, process.env.REFRESH_TOKEN_SECRET,{expiresIn:"1d"})
+
+        res.status(200).json({accessToken}).cookie('jwt',refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000})
     } catch(err){
         res.status(400)
         next(err)
@@ -54,9 +57,51 @@ const login = async (req,res,next) => {
 }
 
 
-// const createRefreshToken = async(req,res,next)
+const hadleRefreshToken = async(req, res) => {
+    try{
+
+        const cookies = req.cookies
+
+        if(!cookies?.jwt){
+            res.status(401)
+            throw new Error("No Refresh token") 
+        }
+
+        const refreshToken = cookies.jwt
+
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async(err, decoded) => {
+            if(err){
+                res.status(403)
+               next("Invalid refresh token")
+            }
+        })
+
+        const user = await User.findById(decoded.id)
+        if(!user){
+            res.status(401)
+            throw new Error('User not found')
+        }
+
+        const newAccessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"20m"})
+
+        res.status(200).json({accessToken: newAccessToken})
+        
+
+
+
+    } catch (err){
+        res.status(500)
+        next()
+    }
+    
+
+    
+
+}
+
+
 
 
 export {
-    register,login
+    register,login,hadleRefreshToken
 }

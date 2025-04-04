@@ -40,10 +40,10 @@ const login = async (req,res,next) => {
              throw new Error(`Invalid credentails`) 
         }
 
-
-        const token = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"1h"})
-
-        res.status(200).json({token})
+   
+        const accesstoken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"1m"})
+     
+        res.status(200).json({accesstoken})
     } catch(err){
         res.status(400)
         next(err)
@@ -52,6 +52,9 @@ const login = async (req,res,next) => {
  
 
 }
+
+
+// const createRefreshToken = async(req,res,next)
 
 
 export {

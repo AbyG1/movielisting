@@ -15,7 +15,7 @@ function errorHandler(err, req, res, next) {
               stack: err.stack,
               route: req.url,
               method: req.method,
-              statusCode: req.statusCode
+              statusCode: res.statusCode
             })    
           res.json({
                 title: "Validation error",
@@ -30,7 +30,7 @@ function errorHandler(err, req, res, next) {
               stack: err.stack,
               route: req.url,
               method: req.method,
-              statusCode: req.statusCode
+              statusCode: res.statusCode
             }) 
             res.json({
               title: "Unauthorized error",
@@ -44,7 +44,7 @@ function errorHandler(err, req, res, next) {
               stack: err.stack,
               route: req.url,
               method: req.method,
-              statusCode: req.statusCode
+              statusCode: res.statusCode
             }) 
             res.json({
               title: "Forbidden",
@@ -58,7 +58,7 @@ function errorHandler(err, req, res, next) {
             stack: err.stack,
             route: req.url,
             method: req.method,
-            statusCode: req.statusCode
+            statusCode: res.statusCode
           }) 
           res.json({
             title: "Not found error",
@@ -72,7 +72,7 @@ function errorHandler(err, req, res, next) {
           stack: err.stack,
           route: req.url,
           method: req.method,
-          statusCode: req.statusCode
+          statusCode: res.statusCode
         }) 
         res.json({
           title: "Internal server error",

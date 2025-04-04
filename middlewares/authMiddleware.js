@@ -23,6 +23,13 @@ const verifyToken = (req,res,next) => {
 
         } catch(err){
             // res.status(400).json({message: "Token is not valid"})
+            if(err.name === "TokenExpiredError"){
+              
+                res.status(401)
+                next(err)
+
+            }
+        
             res.status(400)
             next(err)
          

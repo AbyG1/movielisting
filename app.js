@@ -5,6 +5,8 @@ import mongoose from "mongoose"
 import movieRoutes from './routes/movieRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import movieReview from './routes/reviewRoutes.js'
+import requestResponseLogger from "./middlewares/loggerMiddleware.js"
+
 
 
 import 'dotenv/config'
@@ -18,6 +20,8 @@ const app = express()
 app.use(express.json())
 
 app.use(express.urlencoded({extended: true}))
+
+app.use(requestResponseLogger)
 
 app.use('/api',movieRoutes)
 

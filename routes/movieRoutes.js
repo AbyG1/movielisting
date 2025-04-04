@@ -14,7 +14,7 @@ router.delete('/movie/:id',verifyToken, authorizeRole("admin"), deleteMovie)
 
 
 
-router.get('/movies', verifyToken, authorizeRole("admin","user"), getMovies)
-router.get('/movie/:id', verifyToken, authorizeRole("admin","user"), getOneMovie)
+router.get('/movies', verifyToken, getMovies)
+router.get('/movie/:id', verifyToken, getOneMovie)
 
 export default router

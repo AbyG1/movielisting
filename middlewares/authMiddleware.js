@@ -13,11 +13,11 @@ const verifyToken = (req,res,next) => {
             throw new Error("No token, authorization denied")
    
         }
-
+       
         try{
             const decode = jwt.verify(token, process.env.JWT_SECRET)
             req.user = decode
-        
+      
             next()
 
 
@@ -25,7 +25,7 @@ const verifyToken = (req,res,next) => {
             // res.status(400).json({message: "Token is not valid"})
             res.status(400)
             next(err)
-          
+         
         }
     } else {
         return res.status(401).json({message: "No token, authorization denied"})

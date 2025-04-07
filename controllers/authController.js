@@ -41,12 +41,12 @@ const login = async (req,res,next) => {
         }
 
    
-        const accessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"20m"})
+        const accessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"1m"})
      
 
-        const refreshToken = jwt.sign({id: user._id,role: user.role}, process.env.REFRESH_TOKEN_SECRET,{expiresIn:"1d"})
+        const refreshToken = jwt.sign({id: user._id,role: user.role}, process.env.REFRESH_TOKEN_SECRET,{expiresIn:"5d"})
 
-        res.status(200).json({accessToken}).cookie('jwt',refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000})
+        res.status(200).cookie('jwt',refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000}).json({accessToken})
     } catch(err){
         res.status(400)
         next(err)
@@ -57,7 +57,7 @@ const login = async (req,res,next) => {
 }
 
 
-const hadleRefreshToken = async(req, res) => {
+const handleRefreshToken = async(req, res, next) => {
     try{
 
         const cookies = req.cookies
@@ -74,7 +74,7 @@ const hadleRefreshToken = async(req, res) => {
                 res.status(403)
                next("Invalid refresh token")
             }
-        })
+        
 
         const user = await User.findById(decoded.id)
         if(!user){
@@ -85,13 +85,16 @@ const hadleRefreshToken = async(req, res) => {
         const newAccessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"20m"})
 
         res.status(200).json({accessToken: newAccessToken})
-        
 
+
+
+
+    })
 
 
     } catch (err){
         res.status(500)
-        next()
+        next(err)
     }
     
 
@@ -103,5 +106,5 @@ const hadleRefreshToken = async(req, res) => {
 
 
 export {
-    register,login,hadleRefreshToken
+    register, login, handleRefreshToken
 }

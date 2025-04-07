@@ -41,7 +41,7 @@ const login = async (req,res,next) => {
         }
 
    
-        const accessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"1m"})
+        const accessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"5m"})
      
 
         const refreshToken = jwt.sign({id: user._id,role: user.role}, process.env.REFRESH_TOKEN_SECRET,{expiresIn:"5d"})
@@ -82,7 +82,7 @@ const handleRefreshToken = async(req, res, next) => {
             throw new Error('User not found')
         }
 
-        const newAccessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"20m"})
+        const newAccessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"5m"})
 
         res.status(200).json({accessToken: newAccessToken})
 

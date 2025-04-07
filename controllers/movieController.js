@@ -48,7 +48,7 @@ const addMovie = async(req,res,next) => {
 
 
 
-const deleteMovie = async(req,res) => {
+const deleteMovie = async(req,res,next) => {
 
     try{
        const{id} = req.params
@@ -71,6 +71,32 @@ const deleteMovie = async(req,res) => {
 }
 
 
+const updateMovie = async(req,res,next) => {
+    try{
+        const {id} = req.params
+        
+        const movie = await Movies.findByIdAndUpdate(id, req.body)
+       
+        if(!movie){
+        
+            res.status(404)
+            throw new Error("Movie not found")
+        
+        }   
+
+        const updatedMovie = await Movies.findById(id)
+        
+        res.status(200).json({updatedMovie})
 
 
-export {getMovies,getOneMovie,addMovie,deleteMovie}
+
+    } catch (error) {
+        res.status(400)
+        next(error)
+    }
+}
+
+
+
+
+export {getMovies,getOneMovie,addMovie,deleteMovie,updateMovie}

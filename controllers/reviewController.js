@@ -21,7 +21,6 @@ const addReview = async(req,res,next) => {
 
         if(!rating){
           
-            res.status(400)
             throw new Error("Rating is required")
                 
         }
@@ -32,9 +31,15 @@ const addReview = async(req,res,next) => {
 
                 
     } catch(err) {
-        res.status(400)
+      
+
+        if(err.message === "Rating is required"){
+            res.status(400)
+        }
+
+
         next(err)
-        // res.status(500).json({message:`error ${err.message}`})
+       
     }
 
 }
@@ -119,7 +124,7 @@ const getIndividualMovieReviews = async (req,res,next) => {
         ])
 
             if(reviews.length === 0){
-               res.status(404)
+               
                throw new Error('No reviews found')
             }
 
@@ -127,12 +132,15 @@ const getIndividualMovieReviews = async (req,res,next) => {
     
 
         } catch(err){
-            res.status(400)
+        
             next(err)
-            // res.status(500).json({message:err.message})
+
+            if(err.message === "No reviews found"){
+                res.status(404)
+            }
+
+
         }
-
-
 
 
 }
@@ -176,9 +184,9 @@ const getReviewsByUser = async(req,res,next) => {
         ])
     
         if(review.length === 0){
-            res.status(404)
+          
             throw new Error("No reviews found")
-            return res.status(404).json({message:"No reviews found"})
+          
         }
     
         res.status(200).json(reviews)
@@ -186,8 +194,10 @@ const getReviewsByUser = async(req,res,next) => {
 
 
     } catch (err){
-        res.status(400)
-        // res.status(500).json(err.message)
+        
+        if(err.message === "No reviews found"){
+            res.status(404)
+        }
         next(err)
 
     }

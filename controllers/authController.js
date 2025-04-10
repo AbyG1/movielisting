@@ -3,24 +3,49 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 
+
 const register = async (req,res,next) => {
 
     try{
         const { username, password, role} = req.body
+
+
+        if(!username || !password || !role){
+           console.log("here")
+            throw new Error("Enter all credentials")
+        }
   
 
+        
+         
         const hashedPassword = await bcrypt.hash(password,10)
 
         const newUser = new User({username, password: hashedPassword, role})
+        
+      
         await newUser.save()
+       
+       
 
        
     res.status(201).json({message:`User registered with username ${username}`})
 
     } catch(err) {
-        res.status(400)
+
+        if(err.message === "Enter all credentials"){
+            res.status(401)
+        }
+
+        if(err.code === 11000 && err.keyPattern?.username){
+            res.status(401).json({message: "username already exists"})
+        }
+
+        if(err.name === "ValidationError"){
+            return res.status(400).json({message: err.message})
+        }
+
         next(err)
-        // res.status(500).json({message: 'something went wrong'})
+       
     }
     
 }
@@ -30,17 +55,16 @@ const login = async (req,res,next) => {
         const {username, password} = req.body;
         const user = await User.findOne({username})
         if(!user){
-             res.status(404)
+             
              throw new Error(`user not found`)
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
         if(!isMatch){
-            res.status(401)
+           
              throw new Error(`Invalid credentails`) 
         }
 
-   
         const accessToken = jwt.sign({id: user._id,role: user.role}, process.env.JWT_SECRET,{expiresIn:"5m"})
      
 
@@ -48,9 +72,18 @@ const login = async (req,res,next) => {
 
         res.status(200).cookie('jwt',refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000}).json({accessToken})
     } catch(err){
-        res.status(400)
+        
+
+
+        if(err.message === 'user not found'){
+            res.status(404)
+        }
+        if(err.message === 'Invalid credentails'){
+            res.status(401)
+        }
+
         next(err)
-    //    res.status(500).json({message: err.message})
+    
     }
  
 
@@ -63,7 +96,7 @@ const handleRefreshToken = async(req, res, next) => {
         const cookies = req.cookies
 
         if(!cookies?.jwt){
-            res.status(401)
+            
             throw new Error("No Refresh token") 
         }
 
@@ -78,7 +111,7 @@ const handleRefreshToken = async(req, res, next) => {
 
         const user = await User.findById(decoded.id)
         if(!user){
-            res.status(401)
+           
             throw new Error('User not found')
         }
 
@@ -93,7 +126,15 @@ const handleRefreshToken = async(req, res, next) => {
 
 
     } catch (err){
-        res.status(500)
+
+        if(err.message === "No Refresh token"){
+            res.status(401)
+        }
+
+        if(err.message === "User not found"){
+            res.status(401)
+        }
+
         next(err)
     }
     

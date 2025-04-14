@@ -1,5 +1,5 @@
 import express from 'express'
-import { getMovies,getOneMovie,addMovie,deleteMovie,updateMovie,getMovieByName } from '../controllers/movieController.js'
+import { getMovies,getOneMovie,addMovie,deleteMovie,updateMovie,getMovieByName} from '../controllers/movieController.js'
 import verifyToken from '../middlewares/authMiddleware.js'
 import authorizeRole from '../middlewares/roleMiddleware.js'
 import upload from '../middlewares/uploadMiddleware.js'
@@ -18,6 +18,7 @@ router.get('/movies', verifyToken, getMovies)
 router.get('/movie/:id', verifyToken, getOneMovie)
 router.put('/update-movie/:id', verifyToken, updateMovie)
 router.get('/searchMovie', verifyToken,getMovieByName)
+router.get('/sort-filter', verifyToken)
 
 
 export default router

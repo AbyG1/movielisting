@@ -205,6 +205,22 @@ const getReviewsByUser = async(req,res,next) => {
 }
 
 
+// const filterMoviebyReview = async(req,res,next) => {
+
+//     try{
+
+
+
+//     } catch(error) {
+
+
+
+//     }
+
+
+
+// }
+
 
 
 export { addReview,viewAllReviews,getIndividualMovieReviews,getReviewsByUser}

@@ -1,11 +1,38 @@
 
-import Movies from "../models/movie.model.js"
 
+import Movies from "../models/movie.model.js"
+import mongoose from "mongoose"
 
 
 const getMovies = async(req,res,next) => {
     try{
-        const movies = await Movies.find({})
+
+        const filter = {}
+
+        if(req.query.year){
+            filter.year = req.query.year
+        }
+
+        if(req.query.director){
+            filter.director = { '$regex': req.query.director,
+                                '$options': 'i'
+                            }
+            
+        }
+
+        let moviesQuery = Movies.find(filter)
+        console.log(moviesQuery)
+
+        if(req.query.sort){
+            const sortBy = req.query.sort.split(",").join(' ')
+            moviesQuery = moviesQuery.sort(sortBy)
+        } else {
+            moviesQuery = moviesQuery.sort('name')
+            console.log(moviesQuery)
+        }
+
+
+        const movies = await moviesQuery
 
         if(!movies){
             throw new Error("Movie not found")
@@ -122,7 +149,7 @@ const getMovieByName = async(req,res,next) => {
            throw new Error("No Queries passed")
         }
 
-        
+    
         const movie = await Movies.find({name: {'$regex': `^${req.query.name}`, $options: 'i'}})
 
         if(movie.length === 0){
@@ -147,6 +174,13 @@ const getMovieByName = async(req,res,next) => {
 
     
 }
+
+
+
+
+
+
+
 
 
 export {getMovies,getOneMovie,addMovie,deleteMovie,updateMovie,getMovieByName}
